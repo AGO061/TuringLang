@@ -2,67 +2,105 @@ import turinglib as tl
 import re
 import sys
 
-tape:list[int] = []
-tape_spaces:int = 0
-head_position:int = 0
+tape: list[str] = []
+tape_spaces: int = 0
+alphabet:list[str] = ["0","1"]
+head_position: int = 0
 parser = tl.Parser()
-states:list[tl.State] = []
-run_count:int = 1
-halt_state = tl.State("H",False)
+states: list[tl.State] = []
+run_count: int = 1
+halt_state = tl.State("H")
 halt_state.set_as_halt()
 states.append(halt_state)
 
-
 # Open the file in read mode
-with open(sys.argv[1], 'r') as file:
-    remaining_runs = run_count
-    # Read each line in the file
-    for line in file:
-        # cleanup line
-        line = line.strip()
-        comment_check = re.search(r"^(.*)#.*",line)
-        if comment_check:
-            line=comment_check.group(1).strip()
-        
-        command=parser.parse_line(line)
-        if command:
-            match command.command_type:
-                case "TAPE":
-                    tape_spaces = command.args[0]
-                    tape = list(map(int, [*command.args[1]]))
-                case "HEAD":
-                    if command.args[1]:
-                        head_position=command.args[0]-(tape_spaces)
-                    else:
-                        head_position=command.args[0]
-                case "WIPE":
-                    states:list[tl.State] = [halt_state]
-                case "RUN":
-                    tm = tl.TuringMachine(states,tape,head_position)
-                    tm.run()
-                    tape = tm.tape
-                    head_position = tm.head_position
-                case "READ":
-                    print(tape)
-                case "STATE":
-                    new_state = tl.State(command.args[0], command.args[7]!=None)
-                    new_state.set_conditions(tl.Process(command.args[1],command.args[2],command.args[3]),tl.Process(command.args[4],command.args[5],command.args[6]))
-                    states.append(new_state)
+try:
+    with open(sys.argv[1], 'r') as file:
+        remaining_runs = run_count
+        # Read each line in the file
+        for line in file:
+            # Cleanup line
+            line = line.strip()
+            comment_check = re.search(r"^(.*)#.*", line)
+            if comment_check:
+                line = comment_check.group(1).strip()
 
-                    for statecheck in states:
-                        for state in states:
-                            if state.name == "H":
-                                continue
-                            
-                            if state.zero_condition.state == statecheck.name:
-                                state.zero_condition.state=statecheck
-                            elif state.zero_condition.state == "H":
-                                state.zero_condition.state=halt_state
-                            
-                            if state.one_condition.state == "H":
-                                state.one_condition.state=halt_state
-                            elif state.one_condition.state == statecheck.name:
-                                state.one_condition.state=statecheck
-                case _:
-                    print("COMMAND NOT FOUND: "+command.command_type+"!")
-                    exit(3)
+            command = parser.parse_line(line)
+            if command:
+                match command.command_type:
+                    case "TAPE":
+                        tape_spaces = command.args[0]
+                        tape = list(map(str, [*command.args[1]]))
+                    case "CUT":
+                        if len(command.args) == 1:
+                            char = command.args[0]
+                            try:
+                                while True:
+                                    if tape[0] == char:
+                                        del tape[0]
+                                    else:
+                                        break
+                                
+                                while True:
+                                    if tape[-1] == char:
+                                        del tape[-1]
+                                    else:
+                                        break
+                            except:
+                                pass # skip all list errors that might occur here (at some point it's either gonna finish or fail)
+                        elif len(command.args) == 2:
+                            del tape[command.args[0]:command.args[1]+1] # shouldn't error out
+                        else:
+                            print(f"Error: CUT can't have that many arguments ({len(command.args)}).")
+                            exit(1)
+                    case "ELONGATE":
+                        if command.args[0]=="L":
+                            for i in range(int(command.args[2])):
+                                tape.insert(0,command.args[1])
+                        elif command.args[0]=="R":
+                            for i in range(int(command.args[2])):
+                                tape.append(command.args[1])
+                        else:
+                            print(f"Error: ELONGATE does not support the \"{command.args(1)}\" direction.")
+                            exit(1)
+                    case "HEAD":
+                        if command.args[1]:
+                            head_position = command.args[0] - tape_spaces
+                        else:
+                            head_position = command.args[0]
+                        # Validate head position
+                        if head_position < 0 or head_position >= len(tape):
+                            print(f"Error: Head position {head_position} is out of tape bounds after HEAD command.")
+                            exit(1)
+                    case "WIPE":
+                        states = [halt_state]
+                    case "RUN":
+                        #print([str(state) for state in states])
+                        tm = tl.TuringMachine(states, tape, alphabet, head_position)
+                        tm.run()
+                        tape = tm.tape
+                        head_position = tm.head_position
+                    case "READ":
+                        print("["+"".join(tape)+"]")
+                    case "ALPHABET":
+                        alphabet = list(map(str, [*command.args[0]]))
+                    case "STATE":
+                        # STATE [name, is initial, number of branches, branch, branch, ...]
+                        new_state = tl.State(command.args[0], command.args[1])
+                        for branch_number in range(command.args[2]):
+                            new_state.add_branch(command.args[branch_number+3])
+                        states.append(new_state)
+
+                    case _:
+                        print(f"Error: COMMAND NOT FOUND: {command.command_type}!")
+                        exit(3)
+
+except FileNotFoundError:
+    print(f"Error: The file '{sys.argv[1]}' was not found.")
+    exit(1)
+except IndexError:
+    print("Error: No input file specified. Please provide a file as a command line argument.")
+    exit(1)
+except Exception as e:
+    print(f"An unexpected error occurred: {e}")
+    exit(1)

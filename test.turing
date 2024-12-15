@@ -1,17 +1,15 @@
-# Force current cell to 1
-
 # Code from this video: https://www.youtube.com/watch?v=gJQTFhkhwPA
 
-# Make the cell 0
+ALPHABET [01]
 TAPE [010011101]
 HEAD      ^
 
 # State 0 (Initial)
-0 0XH 0L1 INIT
+0 00XH 10L1 INIT
 # State 1
-1 1X2 0L1
+1 01X2 10L1
 # State 2
-2 0L0 1R0
+2 00L0 11R0
 
 RUN # Runs the machine
 

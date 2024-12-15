@@ -1,0 +1,54 @@
+# Adder - as described here https://stackoverflow.com/questions/59045832/turing-machine-for-addition-and-comparison-of-binary-numbers
+# this is a simple adder, add the 2 numbers in binary separated by one _ (Which is blank in this case as you can't use spaces)
+# (leave space for carries!)
+
+ALPHABET [01_]
+#                   N1   N2
+TAPE [_____________1010_1010_____________]
+HEAD               ^
+
+# Move right to the end of the first block (Initial)
+0 00R0 11R0 __R1 INIT
+
+# Move right to the end of the second block
+1 00R1 11R1 __L2
+
+# Subtract 1 in binary
+2 01L2 10L3 __R5
+
+# Move left to the end of the first block
+3 00L3 11L3 __L4
+
+# Add 1 in binary
+4 01R0 10L4 _1R0
+
+# Clean up
+5 1_R5 __XH
+
+RUN # Run the computation
+
+CUT _ # Cut the _ on the sides of the tape
+
+READ # Read out the results
+
+
+
+
+
+#### ADDITIONAL CHAINED SUM #####
+
+## Adding the result to 1011
+ELONGATE R _ 1
+ELONGATE R 1 1
+ELONGATE R 0 1
+ELONGATE R 1 2
+ELONGATE R _ 20
+ELONGATE L _ 20
+
+HEAD 20 # Move the head on the number
+
+RUN # Run a second time
+
+CUT _ # Clean up
+
+READ # New sum
