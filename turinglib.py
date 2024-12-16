@@ -1,4 +1,5 @@
 import re
+import time
 
 # Parser
 class Command:
@@ -111,6 +112,9 @@ class StateBranch:
                           parts.group(3),
                           parts.group(4))
 
+    def minify(self):
+        return f"{self.check}:{self.write}{self.move}{self.next_state}"
+
     def __str__(self):
         return f"StateBranch(check:{self.check}, write:{self.write}, move:{self.move}, next_state:{self.next_state})"
 
@@ -145,17 +149,31 @@ class TuringMachine:
     tape: list[str] = None
     head_position: int = 0
     current_state: State = None
+    debug:bool = False
+    wait_time:float = 0
+    log_file:str = ""
 
-    def __init__(self, states: list[State], tape: list[str], alphabet:list[str], head_position: int = 0):
+    def __init__(self, states: list[State], tape: list[str], alphabet:list[str], head_position: int = 0, debug=False, wait_time = 0, log_file = ""):
         self.states = states
         self.tape = tape
         self.head_position = head_position
         self.alphabet = alphabet
+        self.debug = debug
+        self.wait_time = wait_time
+        self.log_file = log_file
 
     def run(self):
         current_state = self.find_initial_state()
 
         while True:
+            if self.debug:
+                if self.log_file == "":
+                    print(self.state_debug(current_state=current_state))
+                else:
+                    with open(self.log_file, "a", encoding="ascii") as f:
+                        f.write(self.state_debug(current_state=current_state).replace("╔","=").replace("╠","|=").replace("═","=").replace("╚","="))
+                if self.wait_time>0:
+                    time.sleep(self.wait_time)
             if current_state.is_halt:
                 break
 
@@ -177,7 +195,14 @@ class TuringMachine:
                     print(f"Error: Head position {self.head_position} is out of tape boundss.")
                     exit(1)
 
-                
+    def state_debug(self, current_state:State):
+        return f"""╔════ {current_state.name} ════
+╠ Branches: {str([str(branch.minify()) for branch in current_state.branches]).replace("'","") }
+╠ Tape: [{"".join(self.tape)}]
+╠ Head:  {" "*self.head_position}^
+╠ Head Position (numerical): {str(self.head_position)}
+╚════"""
+    
             
     def get_state_from_name(self, state_name:str) -> State:
         for state in self.states:

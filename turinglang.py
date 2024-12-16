@@ -13,7 +13,16 @@ halt_state = tl.State("H")
 halt_state.set_as_halt()
 states.append(halt_state)
 
-# Open the file in read mode
+# Debug options: -d wait_time log_file
+use_debug=False
+wait_time = 0
+log_file = ""
+if len(sys.argv)>2:
+    use_debug=sys.argv[2] == "-d" or sys.argv[2] == "--debug" 
+    if len(sys.argv)>3:
+        wait_time = float(sys.argv[3])
+        if len(sys.argv)>4:
+            log_file = sys.argv[4]
 try:
     with open(sys.argv[1], 'r') as file:
         remaining_runs = run_count
@@ -76,7 +85,7 @@ try:
                         states = [halt_state]
                     case "RUN":
                         #print([str(state) for state in states])
-                        tm = tl.TuringMachine(states, tape, alphabet, head_position)
+                        tm = tl.TuringMachine(states, tape, alphabet, head_position, debug=use_debug, wait_time=wait_time, log_file=log_file)
                         tm.run()
                         tape = tm.tape
                         head_position = tm.head_position

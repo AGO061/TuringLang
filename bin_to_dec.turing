@@ -1,0 +1,57 @@
+# Binary to Decimal converter by AGO061
+
+ALPHABET [0123456789ABCDEFGHIJX_-/]
+
+# Alphabet explanation
+# we use the numbers for our output and the letters for our input
+# X is used to replace the ones from the binary to unary conversion
+
+# PUT THE HEAD AT THE BEGINNING OF THE NUMBER, WRITE / AT THE BEGINNING AND AT THE END TO SAY THE TAPE ENDS
+# make sure there is an _ before the ending /
+# 100100 is 36
+# Make sure there is enough space before the number to store a space + unary representaton + the final decimal number
+TAPE [/______________________________________100100_/]
+HEAD                                         ^
+
+# Binary to unary converter - https://stackoverflow.com/questions/75092986/binary-to-unary-turing-machine
+
+start __RH 0_RH 1-Linitialize INIT
+initialize _1Rread
+read __Lfinalize --Rread 0-Ldouble 1-Lcarry1
+carry1 --Lcarry1 11Rextend
+extend -1Ldouble
+double --Ldouble 11Lmark
+mark _1Rrepeat 13Lcopy 22LcopyLast
+repeat 11Rrepeat 21Rrepeat --Rread
+copy _2Rback 11Lcopy 22Lcopy
+back 11Rback 22Rback 31Lmark
+copyLast 22LcopyLast _1Rcleanup
+cleanup 11Rcleanup 21Rcleanup --Rread
+finalize -_Lfinalize 11Rbd_start
+
+# After the conversion, well'be one space to the right of our series of ones
+# here we just move to the left of the numbers
+# bd_ is for bin to dec
+
+
+bd_start __Lbd_skip_ones # start skipping ones
+bd_skip_ones 1XLbd_skip_ones __Lbd_start_count # skip all ones and replace with X
+bd_start_count _AXbd_number_skip # write 0 (A) and go to number skip
+
+# skip the number written as A-J and _ until you are on the first X, remove it and return to your number to add 1 (if you encounter / just halt)
+bd_number_skip /_Xbd_cleanup X_Xbd_return_to_number __Rbd_number_skip AARbd_number_skip BBRbd_number_skip CCRbd_number_skip DDRbd_number_skip EERbd_number_skip FFRbd_number_skip GGRbd_number_skip HHRbd_number_skip IIRbd_number_skip JJRbd_number_skip
+
+# return to the main number
+bd_return_to_number __Lbd_return_to_number AAXbd_add_one BBXbd_add_one CCXbd_add_one DDXbd_add_one EEXbd_add_one FFXbd_add_one GGXbd_add_one HHXbd_add_one IIXbd_add_one JJXbd_add_one
+
+# add one and manage carry
+bd_add_one _BXbd_number_skip ABXbd_number_skip BCXbd_number_skip CDXbd_number_skip DEXbd_number_skip EFXbd_number_skip FGXbd_number_skip GHXbd_number_skip HIXbd_number_skip IJXbd_number_skip JALbd_add_one
+
+# convert the final number from letters to numbers and then remove the starting slash
+bd_cleanup __Lbd_cleanup /_XH A0Lbd_cleanup B1Lbd_cleanup C2Lbd_cleanup D3Lbd_cleanup E4Lbd_cleanup F5Lbd_cleanup G6Lbd_cleanup H7Lbd_cleanup I8Lbd_cleanup J9Lbd_cleanup
+
+RUN # run the code
+
+CUT _ # cut _ from both sides of the tape
+
+READ # read tape contents

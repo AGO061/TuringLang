@@ -238,3 +238,36 @@ RUN
 # Output the final tape
 READ
 ```
+## Installing and Using the Interpreter
+The interpreter consists of two Python files:
+
+- **turinglang.py**: The main program responsible for loading the file, creating the machine, and executing tasks.
+- **turinglib.py**: Contains all the supporting classes required by turinglang.py, such as Parser, State, and TuringMachine.
+### Installation
+1. **Python Version**:
+Ensure you have Python 3.12 or later installed, as the code uses the match statement introduced in Python 3.10 (3.12+ is recommended).
+
+2. **Clone the Repository**:
+Clone the repository into a folder of your choice.
+
+### Running the Interpreter
+#### Standard Mode
+To run the interpreter normally, use the following command:
+``` bash
+python turinglang.py file.turing
+``` 
+#### Debug Mode
+For more detailed output, you can run the interpreter in debug mode. This mode allows you to:
+
+- View each iteration of the Turing Machine's execution.
+- Specify a delay time between iterations.
+- Optionally, write the output to a file.
+Use the following syntax:
+
+``` bash
+python turinglang.py file.turing -d <WAIT_TIME> <OUT_FILE_NAME>
+```
+- `<WAIT_TIME>`: Delay between iterations (set to 0 for no delay).
+- `<OUT_FILE_NAME>`: File where the output will be written (optional).
+
+**Note**: All arguments are positional. If you want to specify an output file, you must also specify the wait time.

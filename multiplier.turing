@@ -1,0 +1,49 @@
+# Multiplier - taken from: https://math.hws.edu/eck/js/turing-machine/TM.html
+# this is a simple multiplier, add the 2 numbers in binary separated by one _ (Which is blank in this case as you can't use spaces)
+# (leave space for carries!)
+
+ALPHABET [01_@$yx]
+# PUT THE HEAD AT THE END OF THE SECOND NUMBER
+#                   N1   N2
+TAPE [_____________1010_1010_____________]
+HEAD                       ^
+
+0 __L1 0_L10 1_L20 INIT
+1 __L2 0_L1 1_L1 
+2 __R3 00R3 11R3 $1L2 @0L2
+3 __LH 00R3 11R3
+
+10 __L11 00L10 11L10 @@L10 $$L10 yyL10 xxL10
+11 __L12 00L11 11L11 @@L11 $$L11 yyL11 xxL11
+12 _@R15 0@R15 1$R15 $$L12 @@L12
+15 __R16 00R15 11R15 @@R15 $$R15 yyR15 xxR15
+16 __R17 00R16 11R16 @@R16 $$R16 yyR16 xxR16
+17 __L0 00R17 11R17 @@R17 $$R17 yyR17 xxR17
+
+20 __L21 00L20 11L20
+21 0xL22 1yL26
+22 __L23 00L22 11L22 @@L22 $$L22 yyL22 xxL22
+23 _@R24 0@R24 1$R24 @@L23 $$L23 yyL23 xxL23
+24 __R25 00R24 11R24 @@R24 $$R24 yyR24 xxR24
+25 xxL30 yyL30 __R25 00R25 11R25 $$R25 @@R25
+26 __L27 00L26 11L26 @@L26 $$L26 yyL26 xxL26
+27 _$R24 0$R24 1@L28 @@L27 $$L27 xxL27 yyL27
+28 _1R24 01R24 10L28
+30 __L40 0xL31 1yL35
+31 __L32 00L31 11L31 @@L31 $$L31 xxL31 yyL31
+32 _xR33 0xR33 1yR33 @@L32 $$L32 xxL32 yyL32
+33 __R34 00R33 11R33 @@R33 $$R33 xxR33 yyR33
+34 xxL30 yyL30 00R34 11R34 @@R34 $$R34 __R34
+35 __L36 00L35 11L35 @@L35 $$L35 xxL35 yyL35
+36 _yR33 0yR33 1xL37 @@L36 $$L36 xxL36 yyL36
+37 _1R33 0yR33 10L37
+40 __R41 00L40 11L40 @@L40 $$L40 xxL40 yyL40
+41 __R42 x0R41 y1R41 00R41 11R41 @@R41 $$R41
+42 __R43 x0R42 y1R42 00R42 11R42 @@R42 $$R42
+43 __L0 00R43 11R43 @@R43 $$R43 yyR43 xxR43
+
+RUN # Run the computation
+
+CUT _ # Cut the _ on the sides of the tape
+
+READ # Read out the results
