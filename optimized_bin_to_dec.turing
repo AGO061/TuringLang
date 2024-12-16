@@ -1,0 +1,42 @@
+# Optimized Binary to Decimal converter by AGO061
+# This version should be faster and require less tape
+
+ALPHABET [0123456789_]
+
+# PUT THE HEAD AT ANY POINT OF THE NUMBER
+# make sure there is an _ before the ending
+# 1111100 is 124
+# Make sure there is enough space before the number to store the decimal representation
+TAPE [______________________________________1111100_]
+HEAD                                           ^
+
+# init step
+go_to_binary_end0 00Lgo_to_binary_end0 11Lgo_to_binary_end0 __Lcreate_decimal INIT
+create_decimal _0Rgo_to_binary_beginning0
+go_to_binary_beginning0 __Rgo_to_binary_beginning0 00Xgo_to_binary_end1 11Xgo_to_binary_end1
+go_to_binary_end1 __Lbinary_subtraction 00Rgo_to_binary_end1 11Rgo_to_binary_end1
+
+# now we have the decimal initialized and the head on the beginning of the binary
+
+# binary subtraction
+binary_subtraction 00Lbinary_carry 10Xgo_to_decimal_beginning0
+binary_carry 00Lbinary_carry 10Rbinary_carry_add __Rcleanup
+binary_carry_add 01Rbinary_carry_add __Lgo_to_decimal_beginning0
+
+# here we add 1 to the decimal
+go_to_decimal_beginning0 00Lgo_to_decimal_beginning0 11Lgo_to_decimal_beginning0 __Ldecimal_add
+decimal_add _1Xgo_to_binary_end2 01Xgo_to_binary_end2 12Xgo_to_binary_end2 23Xgo_to_binary_end2 34Xgo_to_binary_end2 45Xgo_to_binary_end2 56Xgo_to_binary_end2 67Xgo_to_binary_end2 78Xgo_to_binary_end2 89Xgo_to_binary_end2 90Ldecimal_add
+
+# and here finally we go to the binary end
+go_to_binary_end2 __Rgo_to_binary_end1 00Rgo_to_binary_end2 11Rgo_to_binary_end2 22Rgo_to_binary_end2 33Rgo_to_binary_end2 44Rgo_to_binary_end2 55Rgo_to_binary_end2 66Rgo_to_binary_end2 77Rgo_to_binary_end2 88Rgo_to_binary_end2 99Rgo_to_binary_end2
+
+
+# cleanup - we are at the binary number
+cleanup 0_Rcleanup __XH
+
+
+RUN
+
+CUT _
+
+READ
