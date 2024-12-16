@@ -1,0 +1,31 @@
+# Decimal to Binary converter by AGO061
+
+ALPHABET [0123456789_]
+
+# PUT THE HEAD ANYWHERE ON THE NUMBER
+# Make sure there is enough space before the number to store the binary representation
+TAPE [______________________________________107_]
+HEAD                                          ^
+
+goto_bin_start __Lcreate_bin_start 00Lgoto_bin_start 11Lgoto_bin_start 22Lgoto_bin_start 33Lgoto_bin_start 44Lgoto_bin_start 55Lgoto_bin_start 66Lgoto_bin_start 77Lgoto_bin_start 88Lgoto_bin_start 99Lgoto_bin_start INIT
+create_bin_start _0Rgo_to_dec_beginning
+go_to_dec_beginning __Rgo_to_dec_beginning 00Xgo_to_dec_end 11Xgo_to_dec_end 22Xgo_to_dec_end 33Xgo_to_dec_end 44Xgo_to_dec_end 55Xgo_to_dec_end 66Xgo_to_dec_end 77Xgo_to_dec_end 88Xgo_to_dec_end 99Xgo_to_dec_end
+go_to_dec_end __Lcount_down_dec 00Rgo_to_dec_end 11Rgo_to_dec_end 22Rgo_to_dec_end 33Rgo_to_dec_end 44Rgo_to_dec_end 55Rgo_to_dec_end 66Rgo_to_dec_end 77Rgo_to_dec_end 88Rgo_to_dec_end 99Rgo_to_dec_end
+
+count_down_dec 98Xgo_back_to_bin 87Xgo_back_to_bin 76Xgo_back_to_bin 65Xgo_back_to_bin 54Xgo_back_to_bin 43Xgo_back_to_bin 32Xgo_back_to_bin 21Xgo_back_to_bin 10Xgo_back_to_bin 00Lcarry
+carry __Rcleanup 00Lcarry 98Rcarry_add 87Rcarry_add 76Rcarry_add 65Rcarry_add 54Rcarry_add 43Rcarry_add 32Rcarry_add 21Rcarry_add 10Rcarry_add # if i can't carry the number it's over
+carry_add 09Rcarry_add __Lgo_back_to_bin 
+
+go_back_to_bin __Lcount_up_bin 00Lgo_back_to_bin 11Lgo_back_to_bin 22Lgo_back_to_bin 33Lgo_back_to_bin 44Lgo_back_to_bin 55Lgo_back_to_bin 66Lgo_back_to_bin 77Lgo_back_to_bin 88Lgo_back_to_bin 99Lgo_back_to_bin
+count_up_bin _1Xgo_to_bin_end 01Xgo_to_bin_end 10Lcount_up_bin
+go_to_bin_end 00Rgo_to_bin_end 11Rgo_to_bin_end __Xgo_to_dec_beginning
+
+# cleanup state
+cleanup 0_Rcleanup __XH
+
+
+RUN
+
+CUT _
+
+READ
